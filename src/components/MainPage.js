@@ -1,8 +1,10 @@
 import React, { Component } from "react";
+import RestaurantsRow from "./RestaurantsRow";
 
 class MainPage extends Component {
   state = {
     restaurants: [],
+    showTable: [],
   };
   constructor(props) {
     super(props);
@@ -44,6 +46,7 @@ class MainPage extends Component {
   };
 
   serarchData(word) {
+    if (word === "") return;
     const searchedRestaurants = this.state.restaurants.filter((restaurant) => {
       if (
         restaurant.resName.includes(word) ||
@@ -63,6 +66,7 @@ class MainPage extends Component {
     });
     return searchedRestaurants.map((restaurant) => {
       return {
+        resId: restaurant.resId,
         resName: restaurant.resName,
         location: restaurant.locationKeyword,
         foodType: restaurant.foodType,
@@ -71,18 +75,27 @@ class MainPage extends Component {
   }
 
   performSearch(searchTerm) {
-    const data = this.serarchData(searchTerm);
-    console.log(data);
+    if (searchTerm === "") return;
+    const results = this.serarchData(searchTerm);
+    const showTable = [];
+    results.forEach((restaurant) => {
+      const restaurantRow = (
+        <RestaurantsRow key={restaurant.resId} restaurant={restaurant} />
+      );
+      showTable.push(restaurantRow);
+    });
+    this.setState({ showTable: showTable });
   }
 
   searchChangeHandler(event) {
     const searchTerm = event.target.value;
     this.performSearch(searchTerm);
   }
+
   render() {
     return (
       <div>
-        <form className="form" id="addItemForm">
+        <div className="form" id="addItemForm">
           <input
             type="text"
             className="searchBar"
@@ -90,7 +103,8 @@ class MainPage extends Component {
             placeholder="지역 식당 또는 이름"
             onChange={this.searchChangeHandler.bind(this)}
           />
-        </form>
+        </div>
+        {this.state.showTable}
       </div>
     );
   }
