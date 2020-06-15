@@ -8,7 +8,11 @@ class RestaurantsRow extends Component {
         <tbody>
           <tr>
             <td>
-              <img alt="Main Image" width="120" src="" />
+              <img
+                alt="Main Image"
+                width="120"
+                src={this.props.restaurant.mainImg}
+              />
             </td>
             <td>
               <h1>{this.props.restaurant.resName}</h1>

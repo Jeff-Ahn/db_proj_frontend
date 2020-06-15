@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import RestaurantsRow from "./RestaurantsRow";
+// import { Link } from "react-router-dom";
 
 class MainPage extends Component {
   state = {
@@ -10,14 +11,14 @@ class MainPage extends Component {
     super(props);
     this.getRestaurants();
     this.getMenus();
+    this.getImages();
   }
 
   getRestaurants = () => {
     fetch("/api/restaurants")
       .then((res) => res.json())
       .then((restaurants) => {
-        //this.setState({ restaurants });
-        this.state.restaurants = restaurants;
+        this.setState({ restaurants });
       })
       .catch((err) => console.error(err));
   };
@@ -27,6 +28,15 @@ class MainPage extends Component {
       .then((res) => res.json())
       .then((menus) => {
         this.setRestaurantsInfoFromMenus(menus);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  getImages = () => {
+    fetch("api/images")
+      .then((res) => res.json())
+      .then((images) => {
+        this.setRestaurantsInfoFromImages(images);
         console.log(this.state.restaurants);
       })
       .catch((err) => console.error(err));
@@ -42,6 +52,19 @@ class MainPage extends Component {
         }
       });
       restaurant.menus = menus;
+    });
+  };
+
+  // 데이터 셋팅 restaurants와 images를 id로 mapping 시킴
+  setRestaurantsInfoFromImages = (_images) => {
+    this.state.restaurants.forEach((restaurant) => {
+      const images = [];
+      _images.forEach((image) => {
+        if (restaurant.resId === image.resId) {
+          images.push({ imgAddress: image.imgAddress });
+        }
+      });
+      restaurant.images = images;
     });
   };
 
@@ -70,6 +93,7 @@ class MainPage extends Component {
         resName: restaurant.resName,
         location: restaurant.locationKeyword,
         foodType: restaurant.foodType,
+        mainImg: restaurant.images[0].imgAddress,
       };
     });
   }
